@@ -11,7 +11,7 @@
             {% for new in news %}
                 <div class="card mb-3">
                   <div class="card-header">Категория: Dota 2</div>
-                    <a href="{% url 'show-post' new.pk %}" class="list-group-item list-group-item-action">
+                    <a href="{% url 'show-post' new.slug %}" class="list-group-item list-group-item-action">
                   <div class="card-body">
                           <h5 class="card-title">{{ new.title }}</h5>
                           <p class="card-text">{{ new.text|truncatewords:50 }}</p>

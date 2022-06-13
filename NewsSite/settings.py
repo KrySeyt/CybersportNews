@@ -20,7 +20,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-wy$t2b#-8t@)(9ke#yp_t%3vkh074-yr(v-o=_janz#8zs45i&'
+SECRET_KEY = os.getenv('DjangoSecretKey')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -82,6 +82,7 @@ DATABASES = {
         'NAME': os.getenv('HerokuPostgresDatabase'),
         'PORT': os.getenv('HerokuPostgresPort'),
         'PASSWORD': os.getenv('HerokuPostgresPassword'),
+        'ATOMIC_REQUESTS': True,
     },
 }
 
