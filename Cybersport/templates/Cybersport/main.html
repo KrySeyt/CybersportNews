@@ -7,21 +7,21 @@
 {% block body %}
     <div class="container mt-3">
         <h1>{{ title }}</h1>
-        <div class="row col-md-12">
-            {% for new in news %}
-                <div class="card mb-3">
-                  <div class="card-header">Категория: Dota 2</div>
-                    <a href="{% url 'show-post' new.slug %}" class="list-group-item list-group-item-action">
-                  <div class="card-body">
-                          <h5 class="card-title">{{ new.title }}</h5>
-                          <p class="card-text">{{ new.text|truncatewords:50 }}</p>
-                  </div>
-                    </a>
-                    <div class="card-footer text-muted">
-                      {{ new.date }}
-                  </div>
-                </div>
-            {% endfor %}
-        </div>
+            <div class="col-md-12">
+                {% for new in news %}
+                    <div class="card mb-3">
+                      <div class="card-header">Категория: {{ new.category.name }}</div>
+                        <a href="{% url 'show-post' new.slug %}" class="list-group-item list-group-item-action">
+                      <div class="card-body">
+                              <h5 class="card-title">{{ new.title }}</h5>
+                              <p class="card-text">{{ new.text|truncatewords:50 }}</p>
+                      </div>
+                        </a>
+                        <div class="card-footer text-muted">
+                          {{ new.date }}
+                      </div>
+                    </div>
+                {% endfor %}
+            </div>
     </div>
 {% endblock body %}

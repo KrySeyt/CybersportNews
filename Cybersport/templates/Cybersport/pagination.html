@@ -1,0 +1,8 @@
+<div class="center">
+    {% if page_obj.has_previous %}
+    <a class="btn btn-primary" href="?page={{ page_obj.previous_page_number }}" role="button">Link</a>
+    {% endif %}
+    {% if page_obj.has_next %}
+    <a class="btn btn-primary" href="?page={{ page_obj.next_page_number }}" role="button">Link</a>
+    {% endif %}
+</div>

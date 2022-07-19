@@ -1,0 +1,20 @@
+{% extends 'cybersport/base.html' %}
+
+{% block body %}
+<form action="{% url 'add-new' %}" method="post">
+    {% csrf_token %}
+    <div class="container mt-3">
+        <h4>Заголовок</h4>
+        {{ form.title }}
+        <h4>Содержание</h4>
+        {{ form.text }}
+        <h4>Ссылка на изображение</h4>
+        {{ form.image_url }}
+        <h4>Категория</h4>
+        {{ form.category }}
+        <h4>Опубликовать</h4>
+        {{ form.is_published }}
+        <button type="submit" class="btn btn-primary btn-block mt-10">Добавить</button>
+    </div>
+</form>
+{% endblock body %}
