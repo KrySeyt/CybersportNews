@@ -1,0 +1,18 @@
+{% extends 'Cybersport/base.html' %}
+
+{% block body %}
+    <form action="{% url 'authorization' %}" method="post">
+        {% csrf_token %}
+        <div class="container mt-3">
+        <h4>Логин:</h4>
+        {{ form.username }}
+        {{ form.username.errors }}
+        <h4>Пароль:</h4>
+        {{ form.password }}
+        {{ form.password.errors }}
+        <br>
+        <br>
+        <button type="submit" class="btn btn-primary btn-block mt-15">Войти</button>
+        </div>
+    </form>
+{% endblock body %}

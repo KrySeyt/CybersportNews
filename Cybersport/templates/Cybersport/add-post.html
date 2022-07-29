@@ -6,14 +6,19 @@
     <div class="container mt-3">
         <h4>Заголовок</h4>
         {{ form.title }}
+        {{ form.title.errors }}
         <h4>Содержание</h4>
         {{ form.text }}
+        {{ form.text.errors }}
         <h4>Ссылка на изображение</h4>
         {{ form.image_url }}
+        {{ form.image_url.errors }}
         <h4>Категория</h4>
         {{ form.category }}
+        {{ form.category.errors }}
         <h4>Опубликовать</h4>
         {{ form.is_published }}
+        {{ form.is_published.errors }}
         <button type="submit" class="btn btn-primary btn-block mt-10">Добавить</button>
     </div>
 </form>

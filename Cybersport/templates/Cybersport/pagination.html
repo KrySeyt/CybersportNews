@@ -1,8 +1,9 @@
-<div class="center">
+<div class="position-relative top-0 start-50">
     {% if page_obj.has_previous %}
-    <a class="btn btn-primary" href="?page={{ page_obj.previous_page_number }}" role="button">Link</a>
+        <a class="btn btn-light" href="?page={{ page_obj.previous_page_number }}" role="button">Prev</a>
     {% endif %}
+
     {% if page_obj.has_next %}
-    <a class="btn btn-primary" href="?page={{ page_obj.next_page_number }}" role="button">Link</a>
+        <a class="btn btn-light" href="?page={{ page_obj.next_page_number }}" role="button">Next</a>
     {% endif %}
 </div>

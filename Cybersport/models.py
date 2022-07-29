@@ -1,5 +1,6 @@
 import django.utils.timezone
 from django.db import models
+from django.contrib.auth.models import User
 
 from django.shortcuts import reverse
 from django.template.defaultfilters import slugify
@@ -15,7 +16,7 @@ class Category(models.Model):
     slug = models.CharField(max_length=100, default='')
 
     def __str__(self):
-        return self.name
+        return self.name if self.name != 'Неизвестно' else self.slug
 
     def __repr__(self):
         return f"Category(name='{self.name}')"
@@ -29,15 +30,11 @@ class New(models.Model):
     title = models.CharField(max_length=300, verbose_name='Заголовок')
     text = models.CharField(max_length=5000, verbose_name='Содержание')
     slug = models.CharField(max_length=300)
-    date = models.DateTimeField(default=django.utils.timezone.now)
+    date = models.DateTimeField(default=django.utils.timezone.now, verbose_name='Дата')
     image_url = models.CharField(max_length=300, blank=True, verbose_name='Ссылка на изображение')
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, verbose_name='Категория')
+    author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, verbose_name='Автор')
     is_published = models.BooleanField(verbose_name='Опубликовано')
-
-    def save(self, force_insert=False, force_update=False, using=None,
-             update_fields=None):
-        self.slug = slugify(self.title)
-        super(New, self).save(force_insert, force_update, using, update_fields)
 
     def __repr__(self):
         return f"New(title='{self.title}')"
