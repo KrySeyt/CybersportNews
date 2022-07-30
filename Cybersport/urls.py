@@ -9,6 +9,7 @@ urlpatterns = [
     path('news/<str:category_slug>/', views.show_category_news, name='category'),
     path('user/<str:username>/', views.show_user, name='user'),
     path('user/<str:username>/posts/', views.show_user_posts, name='user-posts'),
+    path('user/<str:username>/edit/', views.edit_user, name='edit-user'),
     path('add-new/', views.add_new, name='add-new'),
     path('registration/', views.registration, name='registration'),
     path('authorization/', views.authorization, name='authorization'),

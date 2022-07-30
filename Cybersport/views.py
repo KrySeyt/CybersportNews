@@ -1,17 +1,18 @@
 from typing import Tuple
 
+from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import login, authenticate, logout
 from django.utils.text import slugify
 from django.views.generic import ListView, DetailView, CreateView
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.contrib.auth.models import User
 from django.http import HttpRequest, HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.db.models import QuerySet
 from django.core.paginator import Paginator
 
-from .forms import NewForm
+from .forms import NewForm, ChangeUserDataForm
 
 from . import models
 
@@ -21,10 +22,19 @@ FIELDS_FOR_SEARCH: Tuple[str, ...] = ('title', 'text', 'date')
 NEWS_PER_PAGE: int = 5
 
 
+def user_is_page_owner(view):
+    def wrapper(request, username, *args, **kwargs):
+        if request.user.is_anonymous:
+            return redirect('authorization')
+        elif request.user.username != username:
+            return redirect('edit-user', username=request.user.get_username())
+        return view(request, *args, **kwargs)
+    return wrapper
+
+
 def _show_news(request: HttpRequest, news: QuerySet, context: dict = None):
     paginator = Paginator(news, NEWS_PER_PAGE)
     page_number = request.GET.get('page', 1)
-    print(page_number)
     page_obj = paginator.get_page(page_number)
 
     if not context:
@@ -144,8 +154,9 @@ def authorization(request):
         form = AuthenticationForm(request, data=request.POST)
         if form.is_valid():
             user = authenticate(username=form.cleaned_data.get('username'), password=form.cleaned_data.get('password'))
-            login(request, user)
-            return HttpResponseRedirect('main-page')
+            if user is not None:
+                login(request, user)
+                return HttpResponseRedirect('main-page')
     else:
         form = AuthenticationForm()
     context: dict = {
@@ -178,4 +189,21 @@ def search(request: HttpRequest):
 
 
 def show_user(request: HttpRequest, username: str):
-    pass
+    page_owner = User.objects.get(username=username)
+    context: dict = {
+        'page_owner': page_owner
+    }
+    return render(request, 'Cybersport/user.html', context)
+
+
+@user_is_page_owner
+def edit_user(request: HttpRequest):
+    if request.method == 'POST':
+        form = ChangeUserDataForm(request=request, data=request.POST)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect('main-page')
+
+    else:
+        form = ChangeUserDataForm(request)
+    return render(request, 'Cybersport/edit-user.html', context={'form': form})

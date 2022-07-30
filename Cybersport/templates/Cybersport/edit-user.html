@@ -1,0 +1,24 @@
+{% extends 'cybersport/base.html' %}
+
+{% block body %}
+<form action="{% url 'edit-user' username=user.get_username %}" method="post">
+    {% csrf_token %}
+    <div class="container mt-3">
+        <h4>Username</h4>
+        {{ form.username }}
+        {{ form.username.errors }}
+        <h4>Имя</h4>
+        {{ form.first_name }}
+        {{ form.first_name.errors }}
+        <h4>Фамилия</h4>
+        {{ form.last_name }}
+        {{ form.last_name.errors }}
+        <h4>Почта</h4>
+        {{ form.email }}
+        {{ form.email.errors }}
+        <br>
+        <br>
+        <button type="submit" class="btn btn-primary btn-block mt-10">Сохранить</button>
+    </div>
+</form>
+{% endblock body %}

@@ -1,3 +1,21 @@
 {% extends 'Cybersport/base.html' %}
 
-{%  %}
+{% block body %}
+    <div class="container mt-3">
+        <h2>{{ page_owner.get_username }}</h2>
+        <p>{{ page_owner.get_full_name }}</p>
+        <p>ID: {{ page_owner.pk }}</p>
+
+        <p>Дата регистрации: {{ page_owner.date_joined|date:"j E Y" }}</p>
+        <ul class="nav justify-content-left">
+            <a type="button" href="{% url 'user-posts' username=page_owner.get_username %}">
+                <button type="button" class="btn btn-primary">Новости</button>
+            </a>
+            &nbsp&nbsp&nbsp&nbsp
+            <a type="button" href="{% url 'edit-user' username=page_owner.get_username %}">
+                <button type="button" class="btn btn-primary">Редактировать</button>
+            </a>
+        </ul>
+    </div>
+
+{% endblock body %}

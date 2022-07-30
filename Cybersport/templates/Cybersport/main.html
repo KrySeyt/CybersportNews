@@ -21,7 +21,7 @@
                     </div>
                     <div class="card-header">Автор:
                         {% if new.author %}
-                            <a href="{% url "user-posts" username=new.author.username %}">{{ new.author.username }}</a>
+                            <a href="{% url "user" username=new.author.username %}">{{ new.author.username }}</a>
                         {% else %}
                             Неизвестен
                         {% endif %}
