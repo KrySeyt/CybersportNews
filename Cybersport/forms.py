@@ -1,4 +1,5 @@
 from django import forms
+from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.http import HttpRequest
@@ -6,7 +7,6 @@ from django.utils.text import slugify
 from django.utils.translation import gettext as _
 
 from .models import New, Category
-
 
 CATEGORIES = Category.objects.exclude(name='Неизвестно')
 DEFAULT_CATEGORY_NAME: str = 'Другое'
@@ -61,3 +61,13 @@ class ChangeUserDataForm(forms.ModelForm):
 
         if commit:
             self.user.save()
+
+
+class RegistrationForm(UserCreationForm):
+    class Meta(UserCreationForm.Meta):
+        fields = ('username', 'email')
+
+    # def clean_email(self):
+    #     if User.objects.filter(email=self.cleaned_data.get('email')).exists():
+    #         raise ValidationError(message=_('User with this email already exists'), code='Invalid')
+    #     return self.cleaned_data.get('email')

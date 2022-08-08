@@ -4,6 +4,9 @@
     <form action="{% url 'registration' %}" method="post">
         {% csrf_token %}
         <div class="container mt-3">
+        <h4>Электронная почта:</h4>
+        {{ form.email }}
+        {{ form.email.errors }}
         <h4>Логин:</h4>
         {{ form.username }}
         {{ form.username.errors }}

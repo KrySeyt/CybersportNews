@@ -1,18 +1,19 @@
-from typing import Tuple
+from typing import Tuple, Container
+from hashlib import sha1
 
-from django.contrib.auth.decorators import user_passes_test
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login, authenticate, logout
+from django.template.loader import render_to_string
+from django.urls import resolve
 from django.utils.text import slugify
-from django.views.generic import ListView, DetailView, CreateView
-from django.urls import reverse_lazy, reverse
 from django.contrib.auth.models import User
 from django.http import HttpRequest, HttpResponseRedirect
 from django.shortcuts import render, redirect
-from django.db.models import QuerySet
+from django.db.models import QuerySet, Q
 from django.core.paginator import Paginator
+from django.core.mail import send_mail
 
-from .forms import NewForm, ChangeUserDataForm
+from .forms import NewForm, ChangeUserDataForm, RegistrationForm
 
 from . import models
 
@@ -22,7 +23,7 @@ FIELDS_FOR_SEARCH: Tuple[str, ...] = ('title', 'text', 'date')
 NEWS_PER_PAGE: int = 5
 
 
-def user_is_page_owner(view):
+def user_is_page_owner_required(view):
     def wrapper(request, username, *args, **kwargs):
         if request.user.is_anonymous:
             return redirect('authorization')
@@ -69,32 +70,6 @@ def show_all_news(request: HttpRequest):
     return _show_news(request, news, context)
 
 
-class News(ListView):
-    paginate_by = 5
-    model = models.New
-    template_name = 'Cybersport/main.html'
-    context_object_name = 'news'
-
-    def get_context_data(self, *args, **kwargs):
-        context: dict = super(News, self).get_context_data(*args, **kwargs)
-        context['title'] = 'Все новости'
-        return context
-
-    def get_queryset(self):
-        return models.New.objects.filter(is_published=True)
-
-
-class Category(News):
-    def get_context_data(self, *args, **kwargs) -> dict:
-        context: dict = super(Category, self).get_context_data(*args, **kwargs)
-        context['title'] = self.kwargs['category'].name
-        return context
-
-    def get_queryset(self):
-        self.kwargs['category'] = models.Category.objects.get(slug=self.kwargs['category_slug'])
-        return models.New.objects.filter(category_id=self.kwargs['category'].pk, is_published=True)
-
-
 def add_new(request: HttpRequest):
     if request.method == 'POST':
         form = NewForm(request.POST)
@@ -114,39 +89,58 @@ def add_new(request: HttpRequest):
     return render(request, 'Cybersport/add-post.html', context={'form': form})
 
 
-class AddNew(CreateView):
-
-    form_class = NewForm
-    template_name = 'Cybersport/add-post.html'
-    context_object_name = 'form'
-    success_url = reverse_lazy('main-page')
-
-
 def show_post(request: HttpRequest, slug: str):
     post = models.New.objects.get(slug=slug)
     return render(request, 'Cybersport/post.html', {'new': post})
 
 
-class Post(DetailView):
-    context_object_name = 'new'
-    model = models.New
-    template_name = 'Cybersport/post.html'
+def send_email_confirmation(request: HttpRequest, username: str, emails: Container):
+    subject_text: str = "Cybersport.social подтверждение аккаунта"
+    confirmation_code = sha1(username.encode()).hexdigest()[:5]
+
+    context: dict = {
+        'request': request,
+        'username': username,
+        'confirmation_code': confirmation_code
+    }
+
+    html_message = render_to_string('Cybersport/email-confirmation-mail.html', context=context)
+    from_email = None
+    send_mail(subject=subject_text, message=None, from_email=from_email, recipient_list=emails,
+              html_message=html_message)
+
+
+def email_confirmation_sended(request: HttpRequest):
+    return render(request, 'Cybersport/email-confirmation-sended.html')
 
 
 def registration(request: HttpRequest):
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = RegistrationForm(request.POST)
         if form.is_valid():
-            form.save()
-            return HttpResponseRedirect('main-page')
+            user = form.save()
+            user.is_active = False
+            user.save()
+            send_email_confirmation(user.email, user.get_username(), (user.email, ))
+            return redirect('email-confirmation-sended')
     else:
-        form = UserCreationForm()
+        form = RegistrationForm()
 
     context: dict = {
         'form': form,
     }
 
     return render(request, 'Cybersport/registration.html', context)
+
+
+def email_confirmation(request: HttpRequest):
+    username: str = request.GET.get('username')
+    confirmation_code: str = request.GET.get('confirmation-code')
+    if sha1(username.encode()).hexdigest()[:5] == confirmation_code:
+        user = User.objects.get(username=username)
+        user.is_active = True
+        user.save()
+    return redirect('main-page')
 
 
 def authorization(request):
@@ -177,15 +171,15 @@ def search(request: HttpRequest):
         args: list = []
         for field in FIELDS_FOR_SEARCH:
             args.append(f'Q({field}__icontains=search_param)')
-        queryset: QuerySet = models.New.objects.filter(eval(' | '.join(args)))[:5]
+        queryset: QuerySet = models.New.objects.filter(eval(' | '.join(args)))
     else:
-        queryset: QuerySet = models.New.objects.all()[:5]
+        queryset: QuerySet = models.New.objects.all()
 
     context: dict = {
-        'news': queryset
+        'title': f'Результаты по запросу "{search_param}"'
     }
 
-    return render(request, 'Cybersport/main.html', context=context)
+    return _show_news(request=request, news=queryset, context=context)
 
 
 def show_user(request: HttpRequest, username: str):
@@ -196,7 +190,7 @@ def show_user(request: HttpRequest, username: str):
     return render(request, 'Cybersport/user.html', context)
 
 
-@user_is_page_owner
+@user_is_page_owner_required
 def edit_user(request: HttpRequest):
     if request.method == 'POST':
         form = ChangeUserDataForm(request=request, data=request.POST)
@@ -207,3 +201,7 @@ def edit_user(request: HttpRequest):
     else:
         form = ChangeUserDataForm(request)
     return render(request, 'Cybersport/edit-user.html', context={'form': form})
+
+
+def test(request: HttpRequest):
+    return render(request, 'Cybersport/test.html')

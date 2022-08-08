@@ -1,9 +1,12 @@
+{% load request_params %}
 <div class="position-relative top-0 start-50">
-    {% if page_obj.has_previous %}
-        <a class="btn btn-light" href="?page={{ page_obj.previous_page_number }}" role="button">Prev</a>
-    {% endif %}
-
-    {% if page_obj.has_next %}
-        <a class="btn btn-light" href="?page={{ page_obj.next_page_number }}" role="button">Next</a>
-    {% endif %}
+    {% get_params_as_str request as params %}
+    {% with 'page' as params_for_exclude %}
+        {% if page_obj.has_previous %}
+            <a class="btn btn-light" href="?page={{ page_obj.previous_page_number }}{{ params|exclude_params:params_for_exclude }}" role="button">Prev</a>
+        {% endif %}
+        {% if page_obj.has_next %}
+            <a class="btn btn-light" href="?page={{ page_obj.next_page_number }}{{ params|exclude_params:params_for_exclude }}" role="button">Next</a>
+        {% endif %}
+    {% endwith %}
 </div>

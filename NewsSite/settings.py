@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'debug_toolbar',
     'Cybersport',
 ]
 
@@ -48,6 +49,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 ROOT_URLCONF = 'NewsSite.urls'
@@ -129,3 +131,17 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+EMAIL_HOST = os.getenv('EmailHost')
+
+EMAIL_HOST_PASSWORD = os.getenv('EmailHostPassword')
+
+EMAIL_HOST_USER = os.getenv('EmailHostUser')
+
+EMAIL_PORT = os.getenv('EmailPort')
+
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+SITE_URL = 'localhost:8000'
+
+INTERNAL_IPS = ('127.0.0.1',)
