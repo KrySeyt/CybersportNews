@@ -24,7 +24,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static_files')
 SECRET_KEY = os.getenv('DjangoSecretKey')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = [
     'newssite65.herokuapp.com',
