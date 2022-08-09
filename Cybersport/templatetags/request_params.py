@@ -67,8 +67,6 @@ def exclude_params(params: str | list | dict, params_for_exclude: str | list) ->
     str example: "page search-target etc"
     :return: fixed params
     """
-    print(type(params))
-    print(type(params_for_exclude))
     handlers: dict = {
         str: _exclude_params_for_str,
         list: _exclude_params_for_list,
