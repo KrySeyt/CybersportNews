@@ -29,7 +29,6 @@ DEBUG = False
 ALLOWED_HOSTS = [
     'newssite65.herokuapp.com',
     'cybersport.social',
-    '127.0.0.1',
 ]
 
 
@@ -42,7 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'debug_toolbar',
+    # 'debug_toolbar',
     'Cybersport',
 ]
 
@@ -54,7 +53,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
+    # 'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 ROOT_URLCONF = 'NewsSite.urls'
@@ -132,9 +131,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
-STATIC_URL = 'static/'
-
-STATIC_ROOT = os.path.join(BASE_DIR, 'static_files')
+STATIC_URL = 'static_files/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
@@ -152,7 +149,3 @@ EMAIL_PORT = os.getenv('EmailPort')
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 SITE_URL = 'localhost:8000'
-
-INTERNAL_IPS = (
-    '127.0.0.1',
-)
