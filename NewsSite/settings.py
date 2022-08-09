@@ -25,7 +25,10 @@ SECRET_KEY = os.getenv('DjangoSecretKey')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'newssite65.herokuapp.com',
+    'cybersport.social',
+]
 
 
 # Application definition
@@ -146,4 +149,6 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 SITE_URL = 'localhost:8000'
 
-INTERNAL_IPS = ('127.0.0.1',)
+INTERNAL_IPS = (
+    '127.0.0.1',
+)
