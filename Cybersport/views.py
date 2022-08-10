@@ -119,10 +119,8 @@ def registration(request: HttpRequest):
         form = RegistrationForm(request.POST)
         if form.is_valid():
             user = form.save()
-            user.is_active = False
-            user.save()
-            send_email_confirmation(user.email, user.get_username(), (user.email, ))
-            return redirect('email-confirmation-sended')
+            login(request, user)
+            return redirect('main-page')
     else:
         form = RegistrationForm()
 

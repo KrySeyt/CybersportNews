@@ -19,7 +19,7 @@ urlpatterns = [
     path('search/', views.search, name='search'),
     path('email-confirmation/sended', views.email_confirmation_sended, name='email-confirmation-sended'),
     path('email-confirmation/', views.email_confirmation, name='email-confirmation'),
-    path('test', views.test),
-    path('__debug__/', include(debug_toolbar.urls)),
+    # path('test', views.test),
+    # path('__debug__/', include(debug_toolbar.urls)),
     re_path(r'.*', lambda request: HttpResponsePermanentRedirect(reverse('main-page'))),
 ]

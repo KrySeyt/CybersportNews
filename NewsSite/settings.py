@@ -27,7 +27,6 @@ SECRET_KEY = os.getenv('DjangoSecretKey')
 DEBUG = False
 
 ALLOWED_HOSTS = [
-    'newssite65.herokuapp.com',
     'cybersport.social',
 ]
 
