@@ -1,7 +1,7 @@
-from django.urls import path, re_path
-from django.shortcuts import HttpResponsePermanentRedirect, reverse
+from django.urls import path
 
 from . import views
+
 
 urlpatterns = [
     path('post/<str:slug>', views.show_post, name='show-post'),
@@ -18,5 +18,4 @@ urlpatterns = [
     path('email-confirmation/sended', views.email_confirmation_sended, name='email-confirmation-sended'),
     path('email-confirmation/', views.email_confirmation, name='email-confirmation'),
     path('test', views.test),
-    re_path(r'.*', lambda request: HttpResponsePermanentRedirect(reverse('main-page'))),
 ]
