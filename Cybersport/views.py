@@ -194,7 +194,7 @@ def edit_user(request: HttpRequest):
         form = ChangeUserDataForm(request=request, data=request.POST)
         if form.is_valid():
             form.save()
-            return HttpResponseRedirect('main-page')
+            return redirect('main-page')
 
     else:
         form = ChangeUserDataForm(request)

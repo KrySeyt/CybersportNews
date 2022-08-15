@@ -41,6 +41,9 @@ class ChangeUserDataForm(forms.ModelForm):
         }
         super(ChangeUserDataForm, self).__init__(*args, initial=initial, **kwargs)
 
+    def clean(self):
+        pass
+
     def clean_username(self):
         username: str = self.cleaned_data.get('username')
         if username != self.user.get_username() and User.objects.filter(username=username).exists():
