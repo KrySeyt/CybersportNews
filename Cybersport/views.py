@@ -148,7 +148,7 @@ def authorization(request):
             user = authenticate(username=form.cleaned_data.get('username'), password=form.cleaned_data.get('password'))
             if user is not None:
                 login(request, user)
-                return HttpResponseRedirect('main-page')
+                return redirect('main-page')
     else:
         form = AuthenticationForm()
     context: dict = {
@@ -159,7 +159,7 @@ def authorization(request):
 
 def logout_user(request: HttpRequest):
     logout(request)
-    return HttpResponseRedirect('main-page')
+    return redirect('main-page')
 
 
 def search(request: HttpRequest):

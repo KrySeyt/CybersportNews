@@ -67,7 +67,7 @@ class RegistrationForm(UserCreationForm):
     class Meta(UserCreationForm.Meta):
         fields = ('username', 'email')
 
-    # def clean_email(self):
-    #     if User.objects.filter(email=self.cleaned_data.get('email')).exists():
-    #         raise ValidationError(message=_('User with this email already exists'), code='Invalid')
-    #     return self.cleaned_data.get('email')
+    def clean_email(self):
+        if User.objects.filter(email=self.cleaned_data.get('email')).exists():
+            raise ValidationError(message=_('User with this email already exists'), code='Invalid')
+        return self.cleaned_data.get('email')
