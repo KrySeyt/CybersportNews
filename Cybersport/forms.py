@@ -1,12 +1,12 @@
+import pytils
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.http import HttpRequest
-from django.utils.text import slugify
 from django.utils.translation import gettext as _
 
-from .models import New, Category
+from .models import New, Category, NewComment
 
 CATEGORIES = Category.objects.exclude(name='Неизвестно')
 DEFAULT_CATEGORY_NAME: str = 'Другое'
@@ -21,7 +21,7 @@ class NewForm(forms.ModelForm):
         }
 
     def clean_title(self):
-        if slugify(self.cleaned_data['title']) == '':
+        if pytils.translit.slugify(self.cleaned_data['title']) == '':
             raise ValidationError(message=_('Из названия невозможно сформировать slug'), code='invalid')
         return self.cleaned_data['title']
 
@@ -74,3 +74,15 @@ class RegistrationForm(UserCreationForm):
         if User.objects.filter(email=self.cleaned_data.get('email')).exists():
             raise ValidationError(message=_('User with this email already exists'), code='Invalid')
         return self.cleaned_data.get('email')
+
+
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model = NewComment
+        fields = ('text',)
+        widgets = {
+            'text': forms.Textarea(attrs={
+                'cols': 150,
+                'rows': 2,
+            })
+        }

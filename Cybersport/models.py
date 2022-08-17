@@ -41,3 +41,13 @@ class New(models.Model):
 
     def get_absolute_url(self):
         return reverse('show-post', self.slug)
+
+
+class NewComment(models.Model):
+    class Meta:
+        db_table = 'comment'
+
+    author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, verbose_name='Автор')
+    text = models.CharField(max_length=5000)
+    created_at = models.DateTimeField(default=django.utils.timezone.now, verbose_name='Дата')
+    new = models.ForeignKey(New, on_delete=models.CASCADE)

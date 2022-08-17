@@ -1,24 +1,22 @@
 from typing import Tuple, Container
 from hashlib import sha1
 
+import pytils.translit
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login, authenticate, logout
 from django.template.loader import render_to_string
-from django.urls import resolve
+from django.urls import reverse
 from django.utils.text import slugify
 from django.contrib.auth.models import User
-from django.http import HttpRequest, HttpResponseRedirect
+from django.http import HttpRequest, HttpResponseRedirect, HttpResponse
 from django.shortcuts import render, redirect
 from django.db.models import QuerySet, Q
 from django.core.paginator import Paginator
 from django.core.mail import send_mail
-
-from .forms import NewForm, ChangeUserDataForm, RegistrationForm
+from .forms import NewForm, ChangeUserDataForm, RegistrationForm, CommentForm
 
 from . import models
-
-
-FIELDS_FOR_SEARCH: Tuple[str, ...] = ('title', 'text', 'date')
+from .models import NewComment
 
 NEWS_PER_PAGE: int = 5
 
@@ -54,14 +52,6 @@ def show_category_news(request: HttpRequest, category_slug: str):
     return _show_news(request, news, context)
 
 
-def show_user_posts(request: HttpRequest, username: str):
-    news = models.New.objects.filter(author__username=username, is_published=True).order_by('-date')
-    context: dict = {
-        'title': f'Новости {username}'
-    }
-    return _show_news(request, news, context)
-
-
 def show_all_news(request: HttpRequest):
     news = models.New.objects.filter(is_published=True).order_by('-date')
     context: dict = {
@@ -75,13 +65,13 @@ def add_new(request: HttpRequest):
         form = NewForm(request.POST)
         if form.is_valid():
             new = form.save()
-            new.slug = slugify(new.title, allow_unicode=True)
+            new.slug = pytils.translit.slugify(new.title)
 
             if request.user.is_authenticated:
                 new.author = request.user
 
             new.save()
-            return HttpResponseRedirect('main-page')
+            return redirect('main-page')
 
     else:
         form = NewForm()
@@ -89,9 +79,31 @@ def add_new(request: HttpRequest):
     return render(request, 'Cybersport/add-post.html', context={'form': form})
 
 
-def show_post(request: HttpRequest, slug: str):
-    post = models.New.objects.get(slug=slug)
-    return render(request, 'Cybersport/post.html', {'new': post})
+def show_post(request: HttpRequest, post_slug: str):
+    post = models.New.objects.get(slug=post_slug)
+    comment_form = CommentForm()
+    context: dict = {
+        'comment_form': comment_form,
+        'post': post,
+        'comments': post.newcomment_set.all().order_by('-created_at')
+    }
+    return render(request, 'Cybersport/post.html', context)
+
+
+def add_comment(request: HttpRequest, post_slug: str):
+    if request.method == 'POST':
+        post = models.New.objects.get(slug=post_slug)
+        user = request.user
+        text = request.POST['text']
+        NewComment.objects.create(text=text, new=post, author=user)
+    return redirect('show-post', post_slug)
+
+
+def delete_comment(request: HttpRequest, comment_pk: int):
+    comment = NewComment.objects.get(pk=comment_pk)
+    if request.user == comment.author:
+        comment.delete()
+    return redirect(request.META['HTTP_REFERER'])
 
 
 def send_email_confirmation(request: HttpRequest, username: str, emails: Container):
@@ -165,13 +177,14 @@ def logout_user(request: HttpRequest):
 def search(request: HttpRequest):
     search_param: str = request.GET.get('search-param')
 
-    if search_param:
-        args: list = []
-        for field in FIELDS_FOR_SEARCH:
-            args.append(f'Q({field}__icontains=search_param)')
-        queryset: QuerySet = models.New.objects.filter(eval(' | '.join(args)))
-    else:
-        queryset: QuerySet = models.New.objects.all()
+    if not search_param:
+        return redirect('main-page')
+
+    q1 = models.New.objects.filter(title__icontains=search_param)
+    q2 = models.New.objects.filter(text__icontains=search_param)
+    q3 = models.New.objects.filter(author__username__icontains=search_param)
+    q4 = models.New.objects.filter(category__name__icontains=search_param)
+    queryset: QuerySet = q1.union(q2, q3, q4)
 
     context: dict = {
         'title': f'Результаты по запросу "{search_param}"'
@@ -188,6 +201,23 @@ def show_user(request: HttpRequest, username: str):
     return render(request, 'Cybersport/user.html', context)
 
 
+def show_user_posts(request: HttpRequest, username: str):
+    news = models.New.objects.filter(author__username=username, is_published=True).order_by('-date')
+    context: dict = {
+        'title': f'Новости {username}'
+    }
+    return _show_news(request, news, context)
+
+
+def show_user_comments(request: HttpRequest, username: str):
+    comments = NewComment.objects.filter(author__username=username).order_by('-created_at')
+    context: dict = {
+        'comments': comments,
+        'title': f'Комментарии пользователя {username}'
+    }
+    return render(request, 'Cybersport/comments.html', context)
+
+
 @user_is_page_owner_required
 def edit_user(request: HttpRequest):
     if request.method == 'POST':
@@ -202,4 +232,4 @@ def edit_user(request: HttpRequest):
 
 
 def test(request: HttpRequest):
-    return render(request, 'Cybersport/test.html')
+    return render(request, 'Cybersport/test.html', {'form': CommentForm()})

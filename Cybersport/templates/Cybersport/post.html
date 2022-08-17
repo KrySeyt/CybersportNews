@@ -6,14 +6,47 @@
             <div class="card mb-3">
                 <div class="card-header">Категория: Dota 2</div>
                 <div class="card-body">
-                    <img src="{{ new.image_url }}" alt="" class="justify-content-center" width="700" height="350">
-                    <h5 class="card-title">{{ new.title }}</h5>
-                    <p class="card-text">{{ new.text }}</p>
+                    <img src="{{ post.image_url }}" alt="" class="justify-content-center" width="700" height="350">
+                    <h5 class="card-title">{{ post.title }}</h5>
+                    <p class="card-text">{{ post.text }}</p>
                 </div>
                 <div class="card-footer text-muted">
-                    {{ new.date }}
+                    {{ post.date }}
                 </div>
             </div>
         </div>
-    </div>
+        <br>
+        <h3>Комментарии:</h3>
+        {% if user.is_authenticated %}
+            <h4>Добавить комментарий:</h4>
+            <form action="{% url 'add-comment' post.slug %}" method="POST">
+                {% csrf_token %}
+                {{ comment_form.text }}
+                <br>
+                <button type="submit" class="btn btn-primary btn-block mt-15">Подтвердить</button>
+            </form>
+        {% else %}
+            <h4><a href="{% url 'authorization' %}">Авторизуйтесь</a> чтобы оставлять комментарии</h4>
+        {% endif %}
+        <br>
+        <br>
+            {% for comment in comments %}
+                <div class="card">
+                    <div class="card-header">
+                        {{ comment.author }} | {{ comment.created_at }}
+                        {% if comment.author == user %}
+                            <a type="button" href="{% url 'delete-comment' comment.pk %}"><button type="button" class="btn-close" aria-label="Close"></button></a>
+                        {% endif %}
+                    </div>
+                    <div class="card-body">
+                        <blockquote class="blockquote mb-0">
+                            <p>{{ comment.text }}</p>
+                        </blockquote>
+                    </div>
+                </div>
+                <br>
+                {% empty %}
+                 <h3>Комментариев пока нет</h3>
+            {% endfor %}
+    <br><br><br><br><br>
 {% endblock body %}

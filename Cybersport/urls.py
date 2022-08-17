@@ -5,11 +5,14 @@ from . import views
 
 
 urlpatterns = [
-    path('post/<str:slug>', views.show_post, name='show-post'),
     path('news/', views.show_all_news, name='main-page'),
-    path('news/<str:category_slug>/', views.show_category_news, name='category'),
+    path('news/<slug:category_slug>/', views.show_category_news, name='category'),
+    path('post/<slug:post_slug>', views.show_post, name='show-post'),
+    path('post/<slug:post_slug>/add-comment', views.add_comment, name='add-comment'),
+    path('delete-comment/<int:comment_pk>', views.delete_comment, name='delete-comment'),
     path('user/<str:username>/', views.show_user, name='user'),
     path('user/<str:username>/posts/', views.show_user_posts, name='user-posts'),
+    path('user/<str:username>/comments/', views.show_user_comments, name='user-comments'),
     path('user/<str:username>/edit/', views.edit_user, name='edit-user'),
     path('add-new/', views.add_new, name='add-new'),
     path('registration/', views.registration, name='registration'),
