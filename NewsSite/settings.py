@@ -127,8 +127,9 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
@@ -144,5 +145,3 @@ EMAIL_HOST_USER = os.getenv('EmailHostUser')
 EMAIL_PORT = os.getenv('EmailPort')
 
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
-
-SITE_URL = 'localhost:8000'
