@@ -1,16 +1,14 @@
-from typing import Tuple, Container
+from typing import Container
 from hashlib import sha1
 
 import pytils.translit
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login, authenticate, logout
 from django.template.loader import render_to_string
-from django.urls import reverse
-from django.utils.text import slugify
 from django.contrib.auth.models import User
-from django.http import HttpRequest, HttpResponseRedirect, HttpResponse
+from django.http import HttpRequest
 from django.shortcuts import render, redirect
-from django.db.models import QuerySet, Q
+from django.db.models import QuerySet
 from django.core.paginator import Paginator
 from django.core.mail import send_mail
 from .forms import NewForm, ChangeUserDataForm, RegistrationForm, CommentForm
@@ -28,6 +26,13 @@ def user_is_page_owner_required(view):
         elif request.user.username != username:
             return redirect('edit-user', username=request.user.get_username())
         return view(request, *args, **kwargs)
+    return wrapper
+
+
+def no_redirect(view):
+    def wrapper(request: HttpRequest, *args, **kwargs):
+        view(request, *args, **kwargs)
+        return redirect(request.META['HTTP_REFERER'])
     return wrapper
 
 
@@ -85,7 +90,9 @@ def show_post(request: HttpRequest, post_slug: str):
     context: dict = {
         'comment_form': comment_form,
         'post': post,
-        'comments': post.newcomment_set.all().order_by('-created_at')
+        'comments': post.newcomment_set.all().order_by('-created_at'),
+        'is_liked': post.rating.likes.filter(user=request.user).exists(),
+        'is_disliked': post.rating.dislikes.filter(user=request.user).exists(),
     }
     return render(request, 'Cybersport/post.html', context)
 
@@ -233,3 +240,27 @@ def edit_user(request: HttpRequest):
 
 def test(request: HttpRequest):
     return render(request, 'Cybersport/test.html', {'form': CommentForm()})
+
+
+@no_redirect
+def like_post(request: HttpRequest, post_slug: str):
+    post = models.New.objects.get(slug=post_slug)
+    post.rating.likes.create(user=request.user)
+
+
+@no_redirect
+def unlike_post(request: HttpRequest, post_slug: str):
+    post = models.New.objects.get(slug=post_slug)
+    post.rating.likes.get(user=request.user).delete()
+
+
+@no_redirect
+def dislike_post(request: HttpRequest, post_slug: str):
+    post = models.New.objects.get(slug=post_slug)
+    post.rating.dislikes.create(user=request.user)
+
+
+@no_redirect
+def undislike_post(request: HttpRequest, post_slug: str):
+    post = models.New.objects.get(slug=post_slug)
+    post.rating.dislikes.get(user=request.user).delete()

@@ -8,35 +8,43 @@
     <div class="container mt-3">
         <h1>{{ title }}</h1>
         <div class="col-md-12">
-            {% for new in page_obj %}
-                <div class="card mb-3">
-                    <div class="card-header">
-                        Категория: <a type="button" href="{% url 'category' new.category.slug %}">
-                        {% if new.category.name != 'Неизвестно' %}
-                            {{ new.category.name }}
-                        {% else %}
-                             {{ new.category.slug }}
-                        {% endif %}
-                        </a>
-                    </div>
-                    <div class="card-header">Автор:
-                        {% if new.author %}
-                            <a href="{% url "user" username=new.author.username %}">{{ new.author.username }}</a>
-                        {% else %}
-                            Неизвестен
-                        {% endif %}
-                    </div>
-                    <a href="{% url 'show-post' new.slug %}" class="list-group-item list-group-item-action">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ new.title }}</h5>
-                            <p class="card-text">{{ new.text|truncatewords:50 }}</p>
+            {% with user_likes=user.likes %}
+                {% for new in page_obj %}
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            Категория: <a type="button" href="{% url 'category' new.category.slug %}">
+                            {% if new.category.name != 'Неизвестно' %}
+                                {{ new.category.name }}
+                            {% else %}
+                                 {{ new.category.slug }}
+                            {% endif %}
+                            </a>
                         </div>
-                    </a>
-                    <div class="card-footer text-muted">
-                        {{ new.date }}
+                        <div class="card-header">Автор:
+                            {% if new.author %}
+                                <a href="{% url "user" username=new.author.username %}">{{ new.author.username }}</a>
+                            {% else %}
+                                Неизвестен
+                            {% endif %}
+                        </div>
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    <a href="{% url 'show-post' new.slug %}" class="list-group-item list-group-item-action" style="display: inline">
+                                        {{ new.title }}
+                                    </a>
+                                    <span class="badge rounded-pill bg-success">{{ new.rating.likes.count }}</span>
+                                    <span class="badge rounded-pill bg-danger">{{ new.rating.dislikes.count }}</span>
+                                    </h5>
+                                    <a href="{% url 'show-post' new.slug %}" class="list-group-item list-group-item-action">
+                                        <p class="card-text">{{ new.text|truncatewords:50 }}</p>
+                                    </a>
+                            </div>
+                        <div class="card-footer text-muted">
+                            {{ new.date }}
+                        </div>
                     </div>
-                </div>
-            {% endfor %}
+                {% endfor %}
+        {% endwith %}
         </div>
     </div>
 {% endblock body %}

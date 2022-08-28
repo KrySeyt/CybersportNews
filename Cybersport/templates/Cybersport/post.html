@@ -1,5 +1,7 @@
 {% extends 'Cybersport/base.html' %}
 
+{% load static %}
+
 {% block body %}
     <div class="container mt-3">
         <div class="row justify-content-center">
@@ -9,6 +11,38 @@
                     <img src="{{ post.image_url }}" alt="" class="justify-content-center" width="700" height="350">
                     <h5 class="card-title">{{ post.title }}</h5>
                     <p class="card-text">{{ post.text }}</p>
+                    <h5>
+                        <span class="badge rounded-pill bg-success">{{ post.rating.likes.count }}</span>
+                        <a type="button"
+                                {% if is_liked %}
+                                    href="{% url 'unlike-post' post.slug %}"
+                                {% else %}
+                                    href="{% url 'like-post' post.slug %}"
+                                {% endif %}>
+
+                                <img width="30" height="30"
+                                {% if is_liked %}
+                                    src="{% static 'Cybersport/liked.png' %}"
+                                {% else %}
+                                    src="{% static 'Cybersport/like.png' %}"
+                                {% endif %}>
+                        </a>
+                        <span class="badge rounded-pill bg-danger">{{ post.rating.dislikes.count }}</span>
+                        <a type="button"
+                                {% if is_disliked %}
+                                    href="{% url 'undislike-post' post.slug %}"
+                                {% else %}
+                                    href="{% url 'dislike-post' post.slug %}"
+                                {% endif %}>
+
+                                <img width="30" height="30"
+                                    {% if is_disliked %}
+                                        src="{% static 'Cybersport/disliked.png' %}"
+                                    {% else %}
+                                        src="{% static 'Cybersport/dislike.png' %}"
+                                    {% endif %}>
+                        </a>
+                    </h5>
                 </div>
                 <div class="card-footer text-muted">
                     {{ post.date }}
