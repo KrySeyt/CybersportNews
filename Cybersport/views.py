@@ -97,8 +97,6 @@ def show_post(request: HttpRequest, post_slug: str):
         'comment_form': comment_form,
         'post': post,
         'comments': post.newcomment_set.all().order_by('-created_at'),
-        'is_liked': post.rating.likes.filter(user=request.user).exists(),
-        'is_disliked': post.rating.dislikes.filter(user=request.user).exists(),
     }
     return render(request, 'Cybersport/post.html', context)
 

@@ -7,9 +7,31 @@ from django.contrib.auth.models import User
 from django.shortcuts import reverse
 
 
+class LikeManager(models.Manager):
+    @singledispatchmethod
+    def __contains__(self, like):
+        return self.filter(user=like.user, rating=like.rating)
+
+    @__contains__.register
+    def _(self, user: User):
+        return self.filter(user=user).exists()
+
+
+class DislikeManager(models.Manager):
+    @singledispatchmethod
+    def __contains__(self, dislike):
+        return self.filter(user=dislike.user, rating=dislike.rating)
+
+    @__contains__.register
+    def _(self, user: User):
+        return self.filter(user=user).exists()
+
+
 class Like(models.Model):
     class Meta:
         unique_together = ('user', 'rating')
+
+    objects = LikeManager()
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='likes')
     rating = models.ForeignKey('Rating', on_delete=models.CASCADE, related_name='likes')
@@ -27,6 +49,8 @@ class Like(models.Model):
 class Dislike(models.Model):
     class Meta:
         unique_together = ('user', 'rating')
+
+    objects = DislikeManager()
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='dislikes')
     rating = models.ForeignKey('Rating', on_delete=models.CASCADE, related_name='dislikes')
@@ -98,7 +122,7 @@ class New(models.Model):
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, verbose_name='Категория')
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, verbose_name='Автор')
     is_published = models.BooleanField(verbose_name='Опубликовано')
-    rating = models.OneToOneField(Rating, on_delete=models.SET_NULL, related_name='related_object', null=True)
+    rating = models.OneToOneField(Rating, on_delete=models.SET_NULL, related_name='new', null=True)
 
     def __repr__(self):
         return f"New(title='{self.title}')"
@@ -120,3 +144,9 @@ class NewComment(models.Model):
     text = models.CharField(max_length=5000)
     created_at = models.DateTimeField(default=django.utils.timezone.now, verbose_name='Дата')
     new = models.ForeignKey(New, on_delete=models.CASCADE)
+    rating = models.OneToOneField(Rating, on_delete=models.SET_NULL, related_name='comment', null=True)
+    
+    def save(self, *args, **kwargs):
+        if not self.rating:
+            self.rating = Rating.objects.create()
+        super(NewComment, self).save(*args, **kwargs)

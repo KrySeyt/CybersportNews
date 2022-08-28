@@ -14,14 +14,14 @@
                     <h5>
                         <span class="badge rounded-pill bg-success">{{ post.rating.likes.count }}</span>
                         <a type="button"
-                                {% if is_liked %}
+                                {% if user in post.rating.likes %}
                                     href="{% url 'unlike' 'post' post.pk %}"
                                 {% else %}
                                     href="{% url 'like' 'post' post.pk %}"
                                 {% endif %}>
 
                                 <img width="30" height="30"
-                                {% if is_liked %}
+                                {% if user in post.rating.likes %}
                                     src="{% static 'Cybersport/liked.png' %}"
                                 {% else %}
                                     src="{% static 'Cybersport/like.png' %}"
@@ -29,14 +29,14 @@
                         </a>
                         <span class="badge rounded-pill bg-danger">{{ post.rating.dislikes.count }}</span>
                         <a type="button"
-                                {% if is_disliked %}
+                                {% if user in post.rating.dislikes %}
                                     href="{% url 'undislike' 'post' post.pk %}"
                                 {% else %}
                                     href="{% url 'dislike' 'post' post.pk %}"
                                 {% endif %}>
 
                                 <img width="30" height="30"
-                                    {% if is_disliked %}
+                                    {% if user in post.rating.dislikes %}
                                         src="{% static 'Cybersport/disliked.png' %}"
                                     {% else %}
                                         src="{% static 'Cybersport/dislike.png' %}"
@@ -68,6 +68,38 @@
                 <div class="card">
                     <div class="card-header">
                         {{ comment.author }} | {{ comment.created_at }}
+                        <h5 style="display: inline">
+                            <span class="badge rounded-pill bg-success">{{ comment.rating.likes.count }}</span>
+                            <a type="button"
+                                {% if user in comment.rating.likes %}
+                                    href="{% url 'unlike' 'comment' comment.pk %}"
+                                {% else %}
+                                    href="{% url 'like' 'comment' comment.pk %}"
+                                {% endif %}>
+
+                                <img width="30" height="30"
+                                {% if user in comment.rating.likes %}
+                                    src="{% static 'Cybersport/liked.png' %}"
+                                {% else %}
+                                    src="{% static 'Cybersport/like.png' %}"
+                                {% endif %}>
+                            </a>
+                            <span class="badge rounded-pill bg-danger">{{ comment.rating.dislikes.count }}</span>
+                            <a type="button"
+                                {% if user in comment.rating.dislikes %}
+                                    href="{% url 'undislike' 'comment' comment.pk %}"
+                                {% else %}
+                                    href="{% url 'dislike' 'comment' comment.pk %}"
+                                {% endif %}>
+
+                                <img width="30" height="30"
+                                    {% if user in comment.rating.dislikes %}
+                                        src="{% static 'Cybersport/disliked.png' %}"
+                                    {% else %}
+                                        src="{% static 'Cybersport/dislike.png' %}"
+                                    {% endif %}>
+                            </a>
+                        </h5>
                         {% if comment.author == user %}
                             <a type="button" href="{% url 'delete-comment' comment.pk %}"><button type="button" class="btn-close" aria-label="Close"></button></a>
                         {% endif %}
