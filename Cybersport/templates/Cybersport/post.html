@@ -15,9 +15,9 @@
                         <span class="badge rounded-pill bg-success">{{ post.rating.likes.count }}</span>
                         <a type="button"
                                 {% if is_liked %}
-                                    href="{% url 'unlike-post' post.slug %}"
+                                    href="{% url 'unlike' 'post' post.pk %}"
                                 {% else %}
-                                    href="{% url 'like-post' post.slug %}"
+                                    href="{% url 'like' 'post' post.pk %}"
                                 {% endif %}>
 
                                 <img width="30" height="30"
@@ -30,9 +30,9 @@
                         <span class="badge rounded-pill bg-danger">{{ post.rating.dislikes.count }}</span>
                         <a type="button"
                                 {% if is_disliked %}
-                                    href="{% url 'undislike-post' post.slug %}"
+                                    href="{% url 'undislike' 'post' post.pk %}"
                                 {% else %}
-                                    href="{% url 'dislike-post' post.slug %}"
+                                    href="{% url 'dislike' 'post' post.pk %}"
                                 {% endif %}>
 
                                 <img width="30" height="30"

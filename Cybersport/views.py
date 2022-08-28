@@ -18,6 +18,12 @@ from .models import NewComment
 
 NEWS_PER_PAGE: int = 5
 
+OBJECTS_TYPES: dict = {
+    'post': models.New,
+    'comment': NewComment,
+    'user': User,
+}
+
 
 def user_is_page_owner_required(view):
     def wrapper(request, username, *args, **kwargs):
@@ -243,24 +249,28 @@ def test(request: HttpRequest):
 
 
 @no_redirect
-def like_post(request: HttpRequest, post_slug: str):
-    post = models.New.objects.get(slug=post_slug)
-    post.rating.likes.create(user=request.user)
+def like(request: HttpRequest, object_type: str, pk: int):
+    model = OBJECTS_TYPES[object_type]
+    object = model.objects.get(pk=pk)
+    object.rating.likes.create(user=request.user)
 
 
 @no_redirect
-def unlike_post(request: HttpRequest, post_slug: str):
-    post = models.New.objects.get(slug=post_slug)
-    post.rating.likes.get(user=request.user).delete()
+def unlike(request: HttpRequest, object_type: str, pk: int):
+    model = OBJECTS_TYPES[object_type]
+    object = model.objects.get(pk=pk)
+    object.rating.likes.get(user=request.user).delete()
 
 
 @no_redirect
-def dislike_post(request: HttpRequest, post_slug: str):
-    post = models.New.objects.get(slug=post_slug)
-    post.rating.dislikes.create(user=request.user)
+def dislike(request: HttpRequest, object_type: str, pk: int):
+    model = OBJECTS_TYPES[object_type]
+    object = model.objects.get(pk=pk)
+    object.rating.dislikes.create(user=request.user)
 
 
 @no_redirect
-def undislike_post(request: HttpRequest, post_slug: str):
-    post = models.New.objects.get(slug=post_slug)
-    post.rating.dislikes.get(user=request.user).delete()
+def undislike(request: HttpRequest, object_type: str, pk: int):
+    model = OBJECTS_TYPES[object_type]
+    object = model.objects.get(pk=pk)
+    object.rating.dislikes.get(user=request.user).delete()
