@@ -4,21 +4,24 @@
     <form action="{% url 'registration' %}" method="post">
         {% csrf_token %}
         <div class="container mt-3">
-        <h4>Электронная почта:</h4>
-        {{ form.email }}
-        {{ form.email.errors }}
-        <h4>Логин:</h4>
-        {{ form.username }}
-        {{ form.username.errors }}
-        <h4>Пароль:</h4>
-        {{ form.password1 }}
-        {{ form.password1.errors }}
-        <h4>Повторите пароль:</h4>
-        {{ form.password2 }}
-        {{ form.password2.errors }}
-        <br>
-        <br>
-        <button type="submit" class="btn btn-primary btn-block mt-15">Создать</button>
+            <h4>Электронная почта:</h4>
+            {{ form.email }}
+            {{ form.email.errors }}
+            <h4>Логин:</h4>
+            {{ form.username }}
+            {{ form.username.errors }}
+            <h4>Пароль:</h4>
+            {{ form.password1 }}
+            {{ form.password1.errors }}
+            <h4>Повторите пароль:</h4>
+            {{ form.password2 }}
+            {{ form.password2.errors }}
+            <br>
+            <br>
+            <button type="submit" class="btn btn-primary btn-block mt-15">Создать</button>
+            {% for error in form.non_field_errors %}
+                <p>{{ error }}</p>
+            {% endfor %}
         </div>
     </form>
 {% endblock body %}

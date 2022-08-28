@@ -2,6 +2,7 @@ from typing import Container
 from hashlib import sha1
 
 import pytils.translit
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login, authenticate, logout
 from django.template.loader import render_to_string
@@ -246,6 +247,7 @@ def test(request: HttpRequest):
     return render(request, 'Cybersport/test.html', {'form': CommentForm()})
 
 
+@login_required
 @no_redirect
 def like(request: HttpRequest, object_type: str, pk: int):
     model = OBJECTS_TYPES[object_type]
@@ -253,6 +255,7 @@ def like(request: HttpRequest, object_type: str, pk: int):
     object.rating.likes.create(user=request.user)
 
 
+@login_required
 @no_redirect
 def unlike(request: HttpRequest, object_type: str, pk: int):
     model = OBJECTS_TYPES[object_type]
@@ -260,6 +263,7 @@ def unlike(request: HttpRequest, object_type: str, pk: int):
     object.rating.likes.get(user=request.user).delete()
 
 
+@login_required
 @no_redirect
 def dislike(request: HttpRequest, object_type: str, pk: int):
     model = OBJECTS_TYPES[object_type]
@@ -267,6 +271,7 @@ def dislike(request: HttpRequest, object_type: str, pk: int):
     object.rating.dislikes.create(user=request.user)
 
 
+@login_required
 @no_redirect
 def undislike(request: HttpRequest, object_type: str, pk: int):
     model = OBJECTS_TYPES[object_type]
