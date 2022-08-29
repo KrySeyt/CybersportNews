@@ -2,9 +2,15 @@ from functools import singledispatchmethod
 
 import django.utils.timezone
 from django.db import models
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, UserManager
 
 from django.shortcuts import reverse
+
+
+class CustomUserManager(UserManager):
+    def create_user(self, username, email=None, password=None, **extra_fields):
+        super(CustomUserManager, self).create_user(username=username, email=email, password=password, **extra_fields)
+        self.rating = Rating.objects.create()
 
 
 class User(AbstractUser):

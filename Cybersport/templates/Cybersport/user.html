@@ -1,8 +1,47 @@
 {% extends 'Cybersport/base.html' %}
 
+{% load static %}
+
 {% block body %}
     <div class="container mt-3">
         <h2>{{ page_owner.get_username }}</h2>
+        <h4>
+            Рейтинг пользователя:
+            <span class="badge rounded-pill bg-success">{{ page_owner.rating.likes.count }}</span>
+            {% if user != page_owner %}
+                <a type="button"
+                        {% if user in page_owner.rating.likes %}
+                   href="{% url 'unlike' 'user' page_owner.pk %}"
+                        {% else %}
+                   href="{% url 'like' 'user' page_owner.pk %}"
+                        {% endif %}>
+
+                    <img width="30" height="30"
+                            {% if user in page_owner.rating.likes %}
+                         src="{% static 'Cybersport/liked.png' %}"
+                            {% else %}
+                         src="{% static 'Cybersport/like.png' %}"
+                            {% endif %}>
+                </a>
+            {% endif %}
+            <span class="badge rounded-pill bg-danger">{{ page_owner.rating.dislikes.count }}</span>
+            {% if user != page_owner %}
+                <a type="button"
+                        {% if user in page_owner.rating.dislikes %}
+                   href="{% url 'undislike' 'user' page_owner.pk %}"
+                        {% else %}
+                   href="{% url 'dislike' 'user' page_owner.pk %}"
+                        {% endif %}>
+
+                    <img width="30" height="30"
+                            {% if user in page_owner.rating.dislikes %}
+                         src="{% static 'Cybersport/disliked.png' %}"
+                            {% else %}
+                         src="{% static 'Cybersport/dislike.png' %}"
+                            {% endif %}>
+                </a>
+            {% endif %}
+        </h4>
         <p>{{ page_owner.get_full_name }}</p>
         <p>ID: {{ page_owner.pk }}</p>
 
