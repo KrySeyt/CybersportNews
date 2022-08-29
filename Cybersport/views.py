@@ -6,7 +6,6 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login, authenticate, logout
 from django.template.loader import render_to_string
-from django.contrib.auth.models import User
 from django.http import HttpRequest
 from django.shortcuts import render, redirect
 from django.db.models import QuerySet
@@ -22,7 +21,7 @@ NEWS_PER_PAGE: int = 5
 OBJECTS_TYPES: dict = {
     'post': models.New,
     'comment': NewComment,
-    'user': User,
+    'user': models.User,
 }
 
 
@@ -159,7 +158,7 @@ def email_confirmation(request: HttpRequest):
     username: str = request.GET.get('username')
     confirmation_code: str = request.GET.get('confirmation-code')
     if sha1(username.encode()).hexdigest()[:5] == confirmation_code:
-        user = User.objects.get(username=username)
+        user = models.User.objects.get(username=username)
         user.is_active = True
         user.save()
     return redirect('main-page')
@@ -206,7 +205,7 @@ def search(request: HttpRequest):
 
 
 def show_user(request: HttpRequest, username: str):
-    page_owner = User.objects.get(username=username)
+    page_owner = models.User.objects.get(username=username)
     context: dict = {
         'page_owner': page_owner
     }

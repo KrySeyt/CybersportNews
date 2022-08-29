@@ -113,10 +113,18 @@ class Category(models.Model):
         return f"Category(name='{self.name}')"
 
 
+class NewManager(models.Manager):
+    def create(self, *args, **kwargs):
+        self.rating = Rating.objects.create()
+        super(NewManager, self).create(*args, **kwargs)
+    
+
 class New(models.Model):
     class Meta:
         db_table = 'new'
         ordering = ['-date']
+
+    objects = NewManager()
 
     title = models.CharField(max_length=300, verbose_name='Заголовок')
     text = models.CharField(max_length=5000, verbose_name='Содержание')
@@ -133,11 +141,6 @@ class New(models.Model):
 
     def get_absolute_url(self):
         return reverse('show-post', self.slug)
-
-    def save(self, *args, **kwargs):
-        if not self.rating:
-            self.rating = Rating.objects.create()
-        super(New, self).save(*args, **kwargs)
 
 
 class NewComment(models.Model):
