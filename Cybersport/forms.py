@@ -1,12 +1,13 @@
 import pytils
 from django import forms
+from django.conf import settings
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.http import HttpRequest
 from django.utils.translation import gettext as _
 
-from .models import New, Category, NewComment
+from .models import New, Category, NewComment, User
 
 CATEGORIES = Category.objects.exclude(name='Неизвестно')
 DEFAULT_CATEGORY_NAME: str = 'Другое'
@@ -68,6 +69,7 @@ class ChangeUserDataForm(forms.ModelForm):
 
 class RegistrationForm(UserCreationForm):
     class Meta(UserCreationForm.Meta):
+        model = User
         fields = ('username', 'email')
 
     def clean_email(self):

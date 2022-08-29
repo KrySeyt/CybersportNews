@@ -2,9 +2,13 @@ from functools import singledispatchmethod
 
 import django.utils.timezone
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractUser
 
 from django.shortcuts import reverse
+
+
+class User(AbstractUser):
+    rating = models.OneToOneField('Rating', on_delete=models.SET_NULL, related_name='custom_user', null=True)
 
 
 class LikeManager(models.Manager):
@@ -145,7 +149,7 @@ class NewComment(models.Model):
     created_at = models.DateTimeField(default=django.utils.timezone.now, verbose_name='Дата')
     new = models.ForeignKey(New, on_delete=models.CASCADE)
     rating = models.OneToOneField(Rating, on_delete=models.SET_NULL, related_name='comment', null=True)
-    
+
     def save(self, *args, **kwargs):
         if not self.rating:
             self.rating = Rating.objects.create()

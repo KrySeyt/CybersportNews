@@ -67,13 +67,13 @@
             {% for comment in comments %}
                 <div class="card">
                     <div class="card-header">
-                        {{ comment.author }} | {{ comment.created_at }}
+                        <a href="{% url 'user' comment.author.username %}">{{ comment.author }}</a> | {{ comment.created_at }}
                         <h5 style="display: inline">
                             <span class="badge rounded-pill bg-success">{{ comment.rating.likes.count }}</span>
                             <a type="button"
                                 {% if user in comment.rating.likes %}
                                     href="{% url 'unlike' 'comment' comment.pk %}"
-                                {% else %}
+                                {% else %}дл
                                     href="{% url 'like' 'comment' comment.pk %}"
                                 {% endif %}>
 
