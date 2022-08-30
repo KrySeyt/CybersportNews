@@ -3,6 +3,7 @@ from functools import singledispatchmethod
 import django.utils.timezone
 from django.db import models
 from django.contrib.auth.models import AbstractUser, UserManager
+from django.db.models import Sum, Count
 
 from django.shortcuts import reverse
 
@@ -149,11 +150,26 @@ class New(models.Model):
         return reverse('show-post', self.slug)
 
 
+class NewCommentQuerySet(models.QuerySet):
+    def get_likes_count(self):
+        return self.aggregate(Count('rating__likes'))['rating__likes__count']
+
+    def get_dislikes_count(self):
+        return self.aggregate(Count('rating__dislikes'))['rating__dislikes__count']
+
+
+class NewCommentManager(models.Manager):
+    def get_queryset(self):
+        return NewCommentQuerySet(self.model, using=self._db)
+
+
 class NewComment(models.Model):
     class Meta:
         db_table = 'comment'
 
-    author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, verbose_name='Автор')
+    objects = NewCommentManager()
+
+    author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, verbose_name='Автор', related_name='comments')
     text = models.CharField(max_length=5000)
     created_at = models.DateTimeField(default=django.utils.timezone.now, verbose_name='Дата')
     new = models.ForeignKey(New, on_delete=models.CASCADE)

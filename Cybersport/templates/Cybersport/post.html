@@ -70,37 +70,41 @@
                         <a href="{% url 'user' comment.author.username %}">{{ comment.author }}</a> | {{ comment.created_at }}
                         <h5 style="display: inline">
                             <span class="badge rounded-pill bg-success">{{ comment.rating.likes.count }}</span>
-                            <a type="button"
-                                {% if user in comment.rating.likes %}
-                                    href="{% url 'unlike' 'comment' comment.pk %}"
-                                {% else %}дл
-                                    href="{% url 'like' 'comment' comment.pk %}"
-                                {% endif %}>
+                            {% if user != comment.author %}
+                                <a type="button"
+                                        {% if user in comment.rating.likes %}
+                                   href="{% url 'unlike' 'comment' comment.pk %}"
+                                   {% else %}дл
+                                   href="{% url 'like' 'comment' comment.pk %}"
+                                        {% endif %}>
 
-                                <img width="30" height="30"
-                                {% if user in comment.rating.likes %}
-                                    src="{% static 'Cybersport/liked.png' %}"
-                                {% else %}
-                                    src="{% static 'Cybersport/like.png' %}"
-                                {% endif %}>
-                            </a>
+                                    <img width="30" height="30"
+                                            {% if user in comment.rating.likes %}
+                                         src="{% static 'Cybersport/liked.png' %}"
+                                            {% else %}
+                                         src="{% static 'Cybersport/like.png' %}"
+                                            {% endif %}>
+                                </a>
+                            {% endif %}
                             <span class="badge rounded-pill bg-danger">{{ comment.rating.dislikes.count }}</span>
-                            <a type="button"
-                                {% if user in comment.rating.dislikes %}
-                                    href="{% url 'undislike' 'comment' comment.pk %}"
-                                {% else %}
-                                    href="{% url 'dislike' 'comment' comment.pk %}"
-                                {% endif %}>
+                            {% if user != comment.author %}
+                                <a type="button"
+                                        {% if user in comment.rating.dislikes %}
+                                   href="{% url 'undislike' 'comment' comment.pk %}"
+                                        {% else %}
+                                   href="{% url 'dislike' 'comment' comment.pk %}"
+                                        {% endif %}>
 
-                                <img width="30" height="30"
-                                    {% if user in comment.rating.dislikes %}
-                                        src="{% static 'Cybersport/disliked.png' %}"
-                                    {% else %}
-                                        src="{% static 'Cybersport/dislike.png' %}"
-                                    {% endif %}>
-                            </a>
+                                    <img width="30" height="30"
+                                            {% if user in comment.rating.dislikes %}
+                                         src="{% static 'Cybersport/disliked.png' %}"
+                                            {% else %}
+                                         src="{% static 'Cybersport/dislike.png' %}"
+                                            {% endif %}>
+                                </a>
+                            {% endif %}
                         </h5>
-                        {% if comment.author == user %}
+                        {% if user == comment.author %}
                             <a type="button" href="{% url 'delete-comment' comment.pk %}"><button type="button" class="btn-close" aria-label="Close"></button></a>
                         {% endif %}
                     </div>
