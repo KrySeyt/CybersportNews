@@ -6,7 +6,7 @@ from .models import New, Category, NewComment, User, Like, Dislike
 
 @admin.register(New)
 class NewAdmin(admin.ModelAdmin):
-    list_display = ['id', 'title', 'text', 'slug', 'date', 'image_url', 'category', 'is_published']
+    list_display = ['id', 'title', 'text', 'slug', 'date', 'image_url', 'category', 'is_published', 'rating']
 
 
 @admin.register(Category)

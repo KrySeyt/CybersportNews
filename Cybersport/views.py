@@ -77,6 +77,7 @@ def add_new(request: HttpRequest):
         if form.is_valid():
             new = form.save()
             new.slug = pytils.translit.slugify(new.title)
+            new.rating = models.Rating.objects.create()
 
             if request.user.is_authenticated:
                 new.author = request.user

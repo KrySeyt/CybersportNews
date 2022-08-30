@@ -122,8 +122,9 @@ class Category(models.Model):
 
 class NewManager(models.Manager):
     def create(self, *args, **kwargs):
-        self.rating = Rating.objects.create()
-        super(NewManager, self).create(*args, **kwargs)
+        if 'rating' not in kwargs:
+            kwargs['rating'] = Rating.objects.create()
+        return super(NewManager, self).create(*args, **kwargs)
     
 
 class New(models.Model):
