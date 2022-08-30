@@ -91,6 +91,13 @@ def add_new(request: HttpRequest):
     return render(request, 'Cybersport/add-post.html', context={'form': form})
 
 
+def delete_new(request: HttpRequest, post_slug: str):
+    post = models.New.objects.get(slug=post_slug)
+    if request.user == post.author:
+        post.delete()
+    return redirect('main-page')
+
+
 def show_post(request: HttpRequest, post_slug: str):
     post = models.New.objects.get(slug=post_slug)
     comment_form = CommentForm()

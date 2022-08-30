@@ -6,7 +6,12 @@
     <div class="container mt-3">
         <div class="row justify-content-center">
             <div class="card mb-3">
-                <div class="card-header">Категория: {{ post.category }}</div>
+                <div class="card-header">Категория:
+                    {{ post.category }}
+                    {% if user == post.author %}
+                        <a type="button" href="{% url 'delete-post' post.slug %}"><button type="button" class="btn-close" aria-label="Close"></button></a>
+                    {% endif %}
+                </div>
                 <div class="card-body">
                     <img src="{{ post.image_url }}" alt="" class="justify-content-center" width="700" height="350">
                     <h5 class="card-title">{{ post.title }}</h5>

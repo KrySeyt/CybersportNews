@@ -19,6 +19,7 @@ urlpatterns = [
     path('user/<str:username>/comments/', views.show_user_comments, name='user-comments'),
     path('user/<str:username>/edit/', views.edit_user, name='edit-user'),
     path('add-new/', views.add_new, name='add-new'),
+    path('delete-new/<slug:post_slug>', views.delete_new, name='delete-post'),
     path('registration/', views.registration, name='registration'),
     path('authorization/', views.authorization, name='authorization'),
     path('logout/', views.logout_user, name='logout'),
