@@ -17,13 +17,13 @@ from django.views.decorators.vary import vary_on_cookie
 from .forms import NewForm, ChangeUserDataForm, RegistrationForm, CommentForm
 
 from . import models
-from .models import NewComment
+from .models import Comment
 
 NEWS_PER_PAGE: int = 5
 
 OBJECTS_TYPES: dict = {
     'post': models.New,
-    'comment': NewComment,
+    'comment': Comment,
     'user': models.User,
 }
 
@@ -110,25 +110,25 @@ def show_post(request: HttpRequest, post_slug: str):
     context: dict = {
         'comment_form': comment_form,
         'post': post,
-        'comments': post.newcomment_set.all().order_by('-created_at'),
+        'comments': post.comments.all().order_by('-created_at'),
     }
     return render(request, 'Cybersport/post.html', context)
 
 
+@no_redirect
 def add_comment(request: HttpRequest, post_slug: str):
     if request.method == 'POST':
         post = models.New.objects.get(slug=post_slug)
         user = request.user
         text = request.POST['text']
-        NewComment.objects.create(text=text, new=post, author=user)
-    return redirect('show-post', post_slug)
+        Comment.objects.create(text=text, content_object=post, author=user)
 
 
+@no_redirect
 def delete_comment(request: HttpRequest, comment_pk: int):
-    comment = NewComment.objects.get(pk=comment_pk)
+    comment = Comment.objects.get(pk=comment_pk)
     if request.user == comment.author:
         comment.delete()
-    return redirect(request.META['HTTP_REFERER'])
 
 
 def send_email_confirmation(request: HttpRequest, username: str, emails: Container):
@@ -238,7 +238,7 @@ def show_user_posts(request: HttpRequest, username: str):
 
 
 def show_user_comments(request: HttpRequest, username: str):
-    comments = NewComment.objects.filter(author__username=username).order_by('-created_at')
+    comments = Comment.objects.filter(author__username=username).order_by('-created_at')
     context: dict = {
         'comments': comments,
         'title': f'Комментарии пользователя {username}'

@@ -1,21 +1,27 @@
 from functools import singledispatchmethod
 
 import django.utils.timezone
+from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.db import models
 from django.contrib.auth.models import AbstractUser, UserManager
-from django.db.models import Sum, Count
+from django.db.models import Count
+from django.contrib.contenttypes.models import ContentType
 
 from django.shortcuts import reverse
 
 
 class CustomUserManager(UserManager):
     def create_user(self, username, email=None, password=None, **extra_fields):
+        if 'rating' not in extra_fields:
+            extra_fields['rating'] = Rating.objects.create()
         super(CustomUserManager, self).create_user(username=username, email=email, password=password, **extra_fields)
-        self.rating = Rating.objects.create()
 
 
 class User(AbstractUser):
+    objects = CustomUserManager()
+
     rating = models.OneToOneField('Rating', on_delete=models.SET_NULL, related_name='custom_user', null=True)
+    comments = GenericRelation('Comment')
 
 
 class LikeManager(models.Manager):
@@ -125,7 +131,7 @@ class NewManager(models.Manager):
         if 'rating' not in kwargs:
             kwargs['rating'] = Rating.objects.create()
         return super(NewManager, self).create(*args, **kwargs)
-    
+
 
 class New(models.Model):
     class Meta:
@@ -136,13 +142,14 @@ class New(models.Model):
 
     title = models.CharField(max_length=300, verbose_name='Заголовок')
     text = models.CharField(max_length=5000, verbose_name='Содержание')
-    slug = models.CharField(max_length=300)
+    slug = models.SlugField(max_length=300)
     date = models.DateTimeField(default=django.utils.timezone.now, verbose_name='Дата')
     image_url = models.CharField(max_length=300, blank=True, verbose_name='Ссылка на изображение')
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, verbose_name='Категория')
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, verbose_name='Автор')
     is_published = models.BooleanField(verbose_name='Опубликовано')
     rating = models.OneToOneField(Rating, on_delete=models.SET_NULL, related_name='new', null=True)
+    comments = GenericRelation('Comment')
 
     def __repr__(self):
         return f"New(title='{self.title}')"
@@ -159,24 +166,28 @@ class NewCommentQuerySet(models.QuerySet):
         return self.aggregate(Count('rating__dislikes'))['rating__dislikes__count']
 
 
-class NewCommentManager(models.Manager):
+class CommentManager(models.Manager):
     def get_queryset(self):
         return NewCommentQuerySet(self.model, using=self._db)
 
+    def create(self, *args, **kwargs):
+        if 'rating' not in kwargs:
+            kwargs['rating'] = Rating.objects.create()
+        return super(CommentManager, self).create(*args, **kwargs)
 
-class NewComment(models.Model):
+
+class Comment(models.Model):
     class Meta:
         db_table = 'comment'
 
-    objects = NewCommentManager()
+    objects = CommentManager()
 
-    author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, verbose_name='Автор', related_name='comments')
+    author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, verbose_name='Автор',
+                               related_name='comments')
     text = models.CharField(max_length=5000)
     created_at = models.DateTimeField(default=django.utils.timezone.now, verbose_name='Дата')
-    new = models.ForeignKey(New, on_delete=models.CASCADE)
-    rating = models.OneToOneField(Rating, on_delete=models.SET_NULL, related_name='comment', null=True)
+    rating = models.OneToOneField(Rating, on_delete=models.SET_NULL, related_name='related_comment', null=True)
 
-    def save(self, *args, **kwargs):
-        if not self.rating:
-            self.rating = Rating.objects.create()
-        super(NewComment, self).save(*args, **kwargs)
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, null=True)
+    object_id = models.PositiveIntegerField(null=True)
+    content_object = GenericForeignKey('content_type', 'object_id',)

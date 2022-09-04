@@ -7,7 +7,7 @@ from django.core.exceptions import ValidationError
 from django.http import HttpRequest
 from django.utils.translation import gettext as _
 
-from .models import New, Category, NewComment, User, Rating
+from .models import New, Category, Comment, User, Rating
 
 CATEGORIES = Category.objects.exclude(name='Неизвестно')
 DEFAULT_CATEGORY_NAME: str = 'Другое'
@@ -80,7 +80,7 @@ class RegistrationForm(UserCreationForm):
 
 class CommentForm(forms.ModelForm):
     class Meta:
-        model = NewComment
+        model = Comment
         fields = ('text',)
         widgets = {
             'text': forms.Textarea(attrs={
