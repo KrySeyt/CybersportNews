@@ -11,6 +11,9 @@ from django.shortcuts import render, redirect
 from django.db.models import QuerySet
 from django.core.paginator import Paginator
 from django.core.mail import send_mail
+from django.views.decorators.cache import cache_page
+from django.views.decorators.vary import vary_on_cookie
+
 from .forms import NewForm, ChangeUserDataForm, RegistrationForm, CommentForm
 
 from . import models
@@ -55,6 +58,7 @@ def _show_news(request: HttpRequest, news: QuerySet, context: dict = None):
     return render(request, 'Cybersport/main.html', context)
 
 
+@cache_page(5)
 def show_category_news(request: HttpRequest, category_slug: str):
     news = models.New.objects.filter(category__slug=category_slug, is_published=True).order_by('-date')
     context: dict = {
@@ -63,6 +67,7 @@ def show_category_news(request: HttpRequest, category_slug: str):
     return _show_news(request, news, context)
 
 
+@cache_page(5)
 def show_all_news(request: HttpRequest):
     news = models.New.objects.filter(is_published=True).order_by('-date')
     context: dict = {
@@ -71,6 +76,7 @@ def show_all_news(request: HttpRequest):
     return _show_news(request, news, context)
 
 
+@cache_page(60 * 15)
 def add_new(request: HttpRequest):
     if request.method == 'POST':
         form = NewForm(request.POST)
@@ -145,6 +151,17 @@ def email_confirmation_sended(request: HttpRequest):
     return render(request, 'Cybersport/email-confirmation-sended.html')
 
 
+def email_confirmation(request: HttpRequest):
+    username: str = request.GET.get('username')
+    confirmation_code: str = request.GET.get('confirmation-code')
+    if sha1(username.encode()).hexdigest()[:5] == confirmation_code:
+        user = models.User.objects.get(username=username)
+        user.is_active = True
+        user.save()
+    return redirect('main-page')
+
+
+@cache_page(60 * 15)
 def registration(request: HttpRequest):
     if request.method == 'POST':
         form = RegistrationForm(request.POST)
@@ -162,16 +179,7 @@ def registration(request: HttpRequest):
     return render(request, 'Cybersport/registration.html', context)
 
 
-def email_confirmation(request: HttpRequest):
-    username: str = request.GET.get('username')
-    confirmation_code: str = request.GET.get('confirmation-code')
-    if sha1(username.encode()).hexdigest()[:5] == confirmation_code:
-        user = models.User.objects.get(username=username)
-        user.is_active = True
-        user.save()
-    return redirect('main-page')
-
-
+@cache_page(60 * 15)
 def authorization(request):
     if request.method == 'POST':
         form = AuthenticationForm(request, data=request.POST)
@@ -193,6 +201,7 @@ def logout_user(request: HttpRequest):
     return redirect('main-page')
 
 
+@cache_page(5)
 def search(request: HttpRequest):
     search_param: str = request.GET.get('search-param')
 
