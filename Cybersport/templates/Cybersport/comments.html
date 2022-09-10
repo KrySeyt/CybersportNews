@@ -10,7 +10,7 @@
                     <a type="button"
                             {% if user in comment.rating.likes %}
                        href="{% url 'unlike' 'comment' comment.pk %}"
-                       {% else %}дл
+                       {% else %}
                        href="{% url 'like' 'comment' comment.pk %}"
                             {% endif %}>
 

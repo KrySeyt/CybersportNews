@@ -7,7 +7,7 @@ from django.contrib.auth.models import AbstractUser, UserManager
 from django.db.models import Count
 from django.contrib.contenttypes.models import ContentType
 
-from django.shortcuts import reverse
+from django.urls import reverse, reverse_lazy
 
 
 class CustomUserManager(UserManager):
@@ -18,10 +18,16 @@ class CustomUserManager(UserManager):
 
 
 class User(AbstractUser):
+    class Meta(AbstractUser.Meta):
+        verbose_name = 'Пользователь'
+
     objects = CustomUserManager()
 
     rating = models.OneToOneField('Rating', on_delete=models.SET_NULL, related_name='custom_user', null=True)
     comments = GenericRelation('Comment')
+
+    def get_absolute_url(self):
+        return reverse('user', args=(self.get_username(),))
 
 
 class LikeManager(models.Manager):
@@ -135,6 +141,7 @@ class NewManager(models.Manager):
 
 class New(models.Model):
     class Meta:
+        verbose_name = 'Новость'
         db_table = 'new'
         ordering = ['-date']
 
@@ -151,11 +158,14 @@ class New(models.Model):
     rating = models.OneToOneField(Rating, on_delete=models.SET_NULL, related_name='new', null=True)
     comments = GenericRelation('Comment')
 
+    def __str__(self):
+        return self.title
+
     def __repr__(self):
         return f"New(title='{self.title}')"
 
     def get_absolute_url(self):
-        return reverse('show-post', self.slug)
+        return reverse('show-post', args=(self.slug,))
 
 
 class NewCommentQuerySet(models.QuerySet):
