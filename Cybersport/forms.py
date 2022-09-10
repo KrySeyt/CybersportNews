@@ -88,3 +88,5 @@ class CommentForm(forms.ModelForm):
                 'rows': 2,
             })
         }
+
+    template_name = 'Cybersport/comment_form.html'

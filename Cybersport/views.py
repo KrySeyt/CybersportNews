@@ -106,22 +106,20 @@ def delete_new(request: HttpRequest, post_slug: str):
 
 def show_post(request: HttpRequest, post_slug: str):
     post = models.New.objects.get(slug=post_slug)
-    comment_form = CommentForm()
     context: dict = {
-        'comment_form': comment_form,
         'post': post,
-        'comments': post.comments.all().order_by('-created_at'),
     }
     return render(request, 'Cybersport/post.html', context)
 
 
 @no_redirect
-def add_comment(request: HttpRequest, post_slug: str):
+def add_comment(request: HttpRequest, object_type: str, pk: int):
     if request.method == 'POST':
-        post = models.New.objects.get(slug=post_slug)
+        model = OBJECTS_TYPES[object_type]
+        obj = model.objects.get(pk=pk)
         user = request.user
         text = request.POST['text']
-        Comment.objects.create(text=text, content_object=post, author=user)
+        Comment.objects.create(text=text, content_object=obj, author=user)
 
 
 @no_redirect
@@ -243,7 +241,7 @@ def show_user_comments(request: HttpRequest, username: str):
         'comments': comments,
         'title': f'Комментарии пользователя {username}'
     }
-    return render(request, 'Cybersport/comments.html', context)
+    return render(request, 'Cybersport/user-comments.html', context)
 
 
 @user_is_page_owner_required

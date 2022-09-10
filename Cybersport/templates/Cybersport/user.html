@@ -1,6 +1,7 @@
 {% extends 'Cybersport/base.html' %}
 
 {% load static %}
+{% load comments %}
 
 {% block body %}
     <div class="container mt-3">
@@ -44,11 +45,11 @@
         </h4>
 
         <h4>
-        Рейтинг комментариев:
+            Рейтинг комментариев:
             <span class="badge rounded-pill bg-success">{{ page_owner.comments.all.get_likes_count }}</span>
             <span class="badge rounded-pill bg-danger">{{ page_owner.comments.all.get_dislikes_count }}</span>
-        <p>{{ page_owner.get_full_name }}</p>
-        <p>ID: {{ page_owner.pk }}</p>
+            <p>{{ page_owner.get_full_name }}</p>
+            <p>ID: {{ page_owner.pk }}</p>
         </h4>
 
         <p>Дата регистрации: {{ page_owner.date_joined|date:"j E Y" }}</p>
@@ -60,11 +61,20 @@
             <a type="button" href="{% url 'edit-user' username=page_owner.get_username %}">
                 <button type="button" class="btn btn-primary">Редактировать</button>
             </a>
-                &nbsp&nbsp&nbsp&nbsp
+            &nbsp&nbsp&nbsp&nbsp
             <a type="button" href="{% url 'user-comments' username=page_owner.get_username %}">
                 <button type="button" class="btn btn-primary">Комментарии</button>
             </a>
         </ul>
+        <br>
+        <br>
+        <h3>Комментарии:</h3>
+        {% if request.user != page_owner %}
+            {% comment_form 'user' page_owner %}
+            <br>
+            <br>
+        {% endif %}
+        {% comments_block page_owner %}
     </div>
 
 {% endblock body %}

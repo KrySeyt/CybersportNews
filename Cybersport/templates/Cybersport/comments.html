@@ -1,27 +1,59 @@
-{% extends 'Cybersport/base.html' %}
+{% load static %}
 
+{% for comment in comments %}
+    <div class="card">
+        <div class="card-header">
+            <a href="{% url 'user' comment.author.username %}">{{ comment.author }}</a> | {{ comment.created_at }}
+            <h5 style="display: inline">
+                <span class="badge rounded-pill bg-success">{{ comment.rating.likes.count }}</span>
+                {% if user != comment.author %}
+                    <a type="button"
+                            {% if user in comment.rating.likes %}
+                       href="{% url 'unlike' 'comment' comment.pk %}"
+                       {% else %}дл
+                       href="{% url 'like' 'comment' comment.pk %}"
+                            {% endif %}>
 
-{% block title %}
-    {{ title }}
-{% endblock title %}
+                        <img width="30" height="30"
+                                {% if user in comment.rating.likes %}
+                             src="{% static 'Cybersport/liked.png' %}"
+                                {% else %}
+                             src="{% static 'Cybersport/like.png' %}"
+                                {% endif %}>
+                    </a>
+                {% endif %}
+                <span class="badge rounded-pill bg-danger">{{ comment.rating.dislikes.count }}</span>
+                {% if user != comment.author %}
+                    <a type="button"
+                            {% if user in comment.rating.dislikes %}
+                       href="{% url 'undislike' 'comment' comment.pk %}"
+                            {% else %}
+                       href="{% url 'dislike' 'comment' comment.pk %}"
+                            {% endif %}>
 
-{% block body %}
-    <div class="container mt-3">
-        <h1>{{ title }}</h1>
-        <div class="col-md-12">
-            {% for comment in comments %}
-                <div class="card mb-3">
-                    <div class="card-header">
-                        <a type="button" href="{% url 'delete-comment' comment.pk %}"><button type="button" class="btn-close" aria-label="Close"></button></a>
-                        Пост: {{ comment.new.title|truncatewords:30 }}
-                    </div>
-                <div class="card-body">
-                    {{ comment.text }}
-                </div>
-                </div>
-            {% endfor %}
+                        <img width="30" height="30"
+                                {% if user in comment.rating.dislikes %}
+                             src="{% static 'Cybersport/disliked.png' %}"
+                                {% else %}
+                             src="{% static 'Cybersport/dislike.png' %}"
+                                {% endif %}>
+                    </a>
+                {% endif %}
+            </h5>
+            {% if user == comment.author %}
+                <a type="button" href="{% url 'delete-comment' comment.pk %}">
+                    <button type="button" class="btn-close" aria-label="Close"></button>
+                </a>
+            {% endif %}
+        </div>
+        <div class="card-body">
+            <blockquote class="blockquote mb-0">
+                <p>{{ comment.text }}</p>
+            </blockquote>
         </div>
     </div>
-
-
-{% endblock body %}
+    <br>
+{% empty %}
+    <h3>Комментариев пока нет</h3>
+{% endfor %}
+<br><br><br><br><br>

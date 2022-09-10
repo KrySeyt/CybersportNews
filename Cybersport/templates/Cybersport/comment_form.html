@@ -1,0 +1,7 @@
+<h4>Добавить комментарий:</h4>
+<form action="{% url 'add-comment' object_type obj.pk %}" method="POST">
+    {% csrf_token %}
+    {{ comment_form.text }}
+    <br>
+    <button type="submit" class="btn btn-primary btn-block mt-15">Подтвердить</button>
+</form>

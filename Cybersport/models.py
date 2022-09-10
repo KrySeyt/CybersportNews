@@ -183,7 +183,7 @@ class Comment(models.Model):
     objects = CommentManager()
 
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, verbose_name='Автор',
-                               related_name='comments')
+                               related_name='authors_comments')
     text = models.CharField(max_length=5000)
     created_at = models.DateTimeField(default=django.utils.timezone.now, verbose_name='Дата')
     rating = models.OneToOneField(Rating, on_delete=models.SET_NULL, related_name='related_comment', null=True)
