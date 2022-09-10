@@ -58,10 +58,12 @@
                 <button type="button" class="btn btn-primary">Новости</button>
             </a>
             &nbsp&nbsp&nbsp&nbsp
-            <a type="button" href="{% url 'edit-user' username=page_owner.get_username %}">
-                <button type="button" class="btn btn-primary">Редактировать</button>
-            </a>
-            &nbsp&nbsp&nbsp&nbsp
+            {% if request.user == page_owner %}
+                <a type="button" href="{% url 'edit-user' username=page_owner.get_username %}">
+                    <button type="button" class="btn btn-primary">Редактировать</button>
+                </a>
+                &nbsp&nbsp&nbsp&nbsp
+            {% endif %}
             <a type="button" href="{% url 'user-comments' username=page_owner.get_username %}">
                 <button type="button" class="btn btn-primary">Комментарии</button>
             </a>
