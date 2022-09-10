@@ -1,4 +1,5 @@
 {% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,7 +8,9 @@
     {% block meta %}
     {% endblock meta %}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
-    <link rel="shortcut icon" href="{% static 'Cybersport/favicon.jpg' %}"/>
+    <link rel="shortcut icon" href="{% static 'Cybersport/img/favicon.jpg' %}"/>
+    <script type="text/javascript" src="{% static 'Cybersport/js/YandexMetrics.js' %}"></script>
+    <noscript><div><img src="https://mc.yandex.ru/watch/90304175" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
     <title>{% block title %} Cybersport {% endblock title %}</title>
 </head>
 <body>

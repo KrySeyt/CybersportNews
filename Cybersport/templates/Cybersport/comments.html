@@ -16,9 +16,9 @@
 
                         <img width="30" height="30"
                                 {% if user in comment.rating.likes %}
-                             src="{% static 'Cybersport/liked.png' %}"
+                             src="{% static 'Cybersport/img/liked.png' %}"
                                 {% else %}
-                             src="{% static 'Cybersport/like.png' %}"
+                             src="{% static 'Cybersport/img/like.png' %}"
                                 {% endif %}>
                     </a>
                 {% endif %}
@@ -33,9 +33,9 @@
 
                         <img width="30" height="30"
                                 {% if user in comment.rating.dislikes %}
-                             src="{% static 'Cybersport/disliked.png' %}"
+                             src="{% static 'Cybersport/img/disliked.png' %}"
                                 {% else %}
-                             src="{% static 'Cybersport/dislike.png' %}"
+                             src="{% static 'Cybersport/img/dislike.png' %}"
                                 {% endif %}>
                     </a>
                 {% endif %}

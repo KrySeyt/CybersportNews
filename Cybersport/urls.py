@@ -1,10 +1,11 @@
 from django.shortcuts import redirect
-from django.urls import path, include
+from django.urls import path, include, reverse
 
 from . import views
 
 
 urlpatterns = [
+    path('', views.show_all_news),
     path('news/', views.show_all_news, name='main-page'),
     path('news/<slug:category_slug>/', views.show_category_news, name='category'),
     path('post/<slug:post_slug>', views.show_post, name='show-post'),
@@ -27,5 +28,4 @@ urlpatterns = [
     path('email-confirmation/sended/', views.email_confirmation_sended, name='email-confirmation-sended'),
     path('email-confirmation/', views.email_confirmation, name='email-confirmation'),
     path('test', views.test),
-    path('', lambda request: redirect('main-page')),
 ]
