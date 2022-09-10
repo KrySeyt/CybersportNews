@@ -18,9 +18,9 @@
                             {% if new.category.name != 'Неизвестно' %}
                                 {{ new.category.name }}
                             {% else %}
-                                 {{ new.category.slug }}
+                                {{ new.category.slug }}
                             {% endif %}
-                            </a>
+                        </a>
                         </div>
                         <div class="card-header">Автор:
                             {% if new.author %}
@@ -29,24 +29,30 @@
                                 Неизвестен
                             {% endif %}
                         </div>
-                            <div class="card-body">
-                                <h5 class="card-title">
-                                    <a href="{% url 'show-post' new.slug %}" class="list-group-item list-group-item-action" style="display: inline">
-                                        {{ new.title }}
-                                    </a>
-                                    <span class="badge rounded-pill bg-success">{{ new.rating.likes.count }}</span>
-                                    <span class="badge rounded-pill bg-danger">{{ new.rating.dislikes.count }}</span>
-                                    </h5>
-                                    <a href="{% url 'show-post' new.slug %}" class="list-group-item list-group-item-action">
-                                        <p class="card-text">{{ new.text|truncatewords:50 }}</p>
-                                    </a>
-                            </div>
+                        <div class="card-body">
+                            <h5 class="card-title" style="display: inline;">
+                                <a href="{% url 'show-post' new.slug %}" class="list-group-item list-group-item-action"
+                                   style="display: inline">
+                                    {{ new.title }}
+                                </a>
+                                <span class="badge rounded-pill bg-success">{{ new.rating.likes.count }}</span>
+                                <span class="badge rounded-pill bg-danger">{{ new.rating.dislikes.count }}</span>
+                            </h5>
+                            {% if user == new.author %}
+                                <a type="button" href="{% url 'delete-new' new.slug %}">
+                                    <button type="button" class="btn-close" aria-label="Close"></button>
+                                </a>
+                            {% endif %}
+                            <a href="{% url 'show-post' new.slug %}" class="list-group-item list-group-item-action">
+                                <p class="card-text">{{ new.text|truncatewords:50 }}</p>
+                            </a>
+                        </div>
                         <div class="card-footer text-muted">
                             {{ new.date }}
                         </div>
                     </div>
                 {% endfor %}
-        {% endwith %}
+            {% endwith %}
         </div>
     </div>
 {% endblock body %}

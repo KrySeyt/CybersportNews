@@ -57,7 +57,7 @@
         </div>
         <br>
         <h3>Комментарии:</h3>
-        {% if request.user.is_authenticated %}
+        {% if user.is_authenticated %}
             {% comment_form 'post' post %}
         {% else %}
             <h4><a href="{% url 'authorization' %}">Авторизуйтесь</a> чтобы оставлять комментарии</h4>

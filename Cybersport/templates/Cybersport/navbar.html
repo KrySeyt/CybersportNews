@@ -2,7 +2,7 @@
 
 {% load categories %}
 
-{% cache 900 navbar request.user %}
+{% cache 900 navbar user %}
     <nav class="navbar navbar-expand-lg bg-light">
         <div class="container-fluid">
             <a class="navbar-brand" href="{% url 'main-page' %}">Cybersport</a>

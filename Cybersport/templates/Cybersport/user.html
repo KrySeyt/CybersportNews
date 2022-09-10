@@ -58,7 +58,7 @@
                 <button type="button" class="btn btn-primary">Новости</button>
             </a>
             &nbsp&nbsp&nbsp&nbsp
-            {% if request.user == page_owner %}
+            {% if user == page_owner %}
                 <a type="button" href="{% url 'edit-user' username=page_owner.get_username %}">
                     <button type="button" class="btn btn-primary">Редактировать</button>
                 </a>
@@ -71,7 +71,7 @@
         <br>
         <br>
         <h3>Комментарии:</h3>
-        {% if request.user != page_owner %}
+        {% if user != page_owner %}
             {% comment_form 'user' page_owner %}
             <br>
             <br>
